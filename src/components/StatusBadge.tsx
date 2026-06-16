@@ -27,8 +27,8 @@ export function StatusCampanhaBadge({ status }: { status: StatusCampanha }) {
 
 export function TipoCampanhaBadge({ tipo }: { tipo: TipoCampanha }) {
   return tipo === "PUBLICA" ? (
-    <Badge tone="default">Pública</Badge>
+    <Badge tone="info">Pública</Badge>
   ) : (
-    <Badge tone="info">Privada</Badge>
+    <Badge tone="warning">Privada</Badge>
   );
 }
