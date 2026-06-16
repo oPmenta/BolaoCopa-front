@@ -49,7 +49,7 @@ export interface MeioPagamento {
 
 export interface TipoCampanhaItem {
   id: number | string;
-  nome: string;
+  descricao: string;
   ativo: boolean;
 }
 
