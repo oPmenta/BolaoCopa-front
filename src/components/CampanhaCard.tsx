@@ -20,7 +20,7 @@ export function CampanhaCard({ campanha }: { campanha: Campanha }) {
         <Card className="overflow-hidden transition-all group-hover:shadow-elegant group-hover:-translate-y-0.5">
           <div className="h-24 bg-gradient-brasil bg-stripes-brasil relative">
             <div className="absolute inset-0 flex items-center justify-between px-5">
-              <Trophy className="h-10 w-10 text-primary-foreground/80" />
+              <Trophy className="h-10 w-10 icon-gold" />
               <div className="flex gap-2">
                 <TipoCampanhaBadge tipo={campanha.tipo} />
                 <StatusCampanhaBadge status={campanha.status} />

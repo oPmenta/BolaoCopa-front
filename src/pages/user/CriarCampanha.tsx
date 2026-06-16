@@ -189,7 +189,7 @@ export function CampanhaForm({
         <Textarea id="descricao" {...form.register("descricao")} />
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div className="gap-4">
         <div className="space-y-1.5">
           <Label htmlFor="valorAposta">Valor da aposta (R$)</Label>
           <Input

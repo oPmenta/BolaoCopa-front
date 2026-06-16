@@ -24,14 +24,14 @@ export default function Home() {
         className="rounded-3xl overflow-hidden border border-border bg-gradient-brasil bg-stripes-brasil text-primary-foreground p-8 sm:p-12 shadow-elegant"
       >
         <div className="max-w-2xl space-y-4">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur">
-            <Sparkles className="h-3.5 w-3.5" /> Edição Mundial
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-sm px-3 py-1 text-xs font-semibold text-yellow-300 border border-yellow-500/30">
+            <Sparkles className="h-3.5 w-3.5 text-yellow-300" /> Edição Mundial
           </span>
-          <h1 className="font-display text-4xl sm:text-6xl leading-none">
+          <h1 className="font-display text-4xl sm:text-6xl leading-none text-shadow">
             Aposte com a galera. <br />
-            <span className="text-accent">Vibre a cada gol.</span>
+            <span className="text-[#FFDF00]">Vibre a cada gol.</span>
           </h1>
-          <p className="text-primary-foreground/90 max-w-lg">
+          <p className="text-white max-w-lg text-shadow-lg font-semibold">
             Participe de bolões públicos ou entre num bolão privado usando o código de
             convite enviado pelo seu amigo.
           </p>

@@ -5,56 +5,40 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
- * Tema Bolão da Copa — paleta Brasil
- * Verde-bandeira #009C3B, Amarelo #FFDF00, Azul #002776
- * Tokens em HSL para Tailwind.
- */
 @layer base {
   :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
+    --background: 0 0% 98%;
+    --foreground: 0 0% 10%;
 
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
 
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
+    /* Verde Brasil */
+    --primary: 144 80% 32%;
+    --primary-foreground: 0 0% 100%;
 
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
+    /* Amarelo Brasil (para accent) */
+    --accent: 48 100% 50%;
+    --accent-foreground: 0 0% 10%;
 
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
+    /* Azul Brasil (para secondary) */
+    --secondary: 226 100% 23%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
+    --muted: 0 0% 92%;
+    --muted-foreground: 0 0% 45%;
 
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 144 80% 32%;
 
-    --destructive: oklch(0.577 0.245 27.325);
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --success: 144 70% 38%;
     --warning: 38 95% 50%;
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
+
+    --radius: 0.75rem;
   }
 
   * {
@@ -70,12 +54,10 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
-    background-image: radial-gradient(
-        circle at 100% 0%,
-        hsl(var(--accent) / 0.12) 0%,
-        transparent 40%
-      ),
-      radial-gradient(circle at 0% 100%, hsl(var(--primary) / 0.1) 0%, transparent 45%);
+    background-image:
+      radial-gradient(circle at 90% 10%, rgba(0, 156, 59, 0.06) 0%, transparent 60%),
+      radial-gradient(circle at 10% 90%, rgba(255, 223, 0, 0.08) 0%, transparent 60%),
+      radial-gradient(circle at 50% 50%, rgba(0, 39, 118, 0.04) 0%, transparent 70%);
     background-attachment: fixed;
   }
 
@@ -84,50 +66,59 @@
   h3 {
     @apply font-display tracking-wide;
   }
-  .theme {
-    --font-heading: var(--font-sans);
-    --font-sans: 'Geist Variable', sans-serif;
+}
+
+@layer utilities {
+  .bg-gradient-brasil {
+    background: linear-gradient(135deg, #009C3B 0%, #FFDF00 50%, #002776 100%);
   }
-  .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+
+  .bg-stripes-brasil {
+    background-image: repeating-linear-gradient(45deg,
+        rgba(0, 156, 59, 0.10) 0px,
+        rgba(0, 156, 59, 0.10) 10px,
+        rgba(255, 223, 0, 0.10) 10px,
+        rgba(255, 223, 0, 0.10) 20px,
+        rgba(0, 39, 118, 0.10) 20px,
+        rgba(0, 39, 118, 0.10) 30px);
+    background-blend-mode: overlay;
   }
-  html {
-    @apply font-sans;
+
+  .shadow-elegant {
+    box-shadow: 0 12px 40px -16px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Classe para ícone dourado */
+  .icon-gold {
+    color: #FFDF00;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  }
+
+  /* Classe para texto com sombra (sobre fundos escuros) */
+  .text-shadow {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Classe para texto preto sobre fundo claro (usado nos cards) */
+  .text-dark-strong {
+    color: #1a1a1a;
+  }
+
+  .text-shadow-lg {
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.7);
   }
 }
 
 @layer components {
   .container-app {
     @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+  }
+
+  .btn-accent {
+    @apply bg-[#FFDF00] text-black hover:bg-[#f5d300] transition-colors;
+  }
+
+  .card-copa {
+    @apply bg-white/90 backdrop-blur-sm border border-white/30 shadow-elegant;
   }
 }

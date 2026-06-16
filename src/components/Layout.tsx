@@ -32,8 +32,8 @@ export function Layout() {
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-brasil text-primary-foreground shadow-elegant">
               <Trophy className="h-5 w-5" />
             </span>
-            <span>
-              Bolão da <span className="text-primary">Copa</span>
+            <span className="bg-gradient-to-r from-green-600 via-yellow-500 to-blue-700 bg-clip-text text-transparent">
+              Bolão da <span className="text-green-700">Copa</span>
             </span>
           </Link>
 

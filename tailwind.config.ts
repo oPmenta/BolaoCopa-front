@@ -31,9 +31,9 @@ export default {
       },
       backgroundImage: {
         "gradient-brasil":
-          "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%)",
+          "linear-gradient(135deg, #009C3B 0%, #FFDF00 50%, #002776 100%)",
         "stripes-brasil":
-          "repeating-linear-gradient(135deg, hsl(var(--primary) / 0.06) 0 12px, transparent 12px 24px)",
+          "repeating-linear-gradient(45deg, rgba(0,156,59,0.15) 0px, rgba(0,156,59,0.15) 10px, rgba(255,223,0,0.15) 10px, rgba(255,223,0,0.15) 20px, rgba(0,39,118,0.15) 20px, rgba(0,39,118,0.15) 30px)",
       },
       boxShadow: {
         elegant: "0 12px 40px -16px hsl(var(--primary) / 0.35)",
