@@ -6,12 +6,15 @@ import { BuscaPorCodigo } from "@/components/BuscaPorCodigo";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Label, Select } from "@/components/ui/Form";
 import type { Campanha, TipoCampanha } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminDashboard() {
+  const { user } = useAuth();
   const [filtro, setFiltro] = useState<"TODAS" | TipoCampanha>("TODAS");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin", "campanhas"],
+    queryKey: ["admin", "campanhas", user?.id],
+    enabled: !!user?.id,
     queryFn: async () => {
       const response = await api.get<{ data: Campanha[] }>("/campanhas");
       return response.data.data;

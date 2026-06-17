@@ -26,7 +26,6 @@ export default function CampanhaDetalhe() {
   const [idMeioPagamento, setIdMeioPagamento] = useState<string | number | "">("");
   const [comprovante, setComprovante] = useState<File | null>(null);
 
-  // Busca campanha
   const { data: campanha, isLoading, isError } = useQuery({
     queryKey: ["campanha", "codigo", codigo],
     enabled: !!codigo,
@@ -36,7 +35,6 @@ export default function CampanhaDetalhe() {
     },
   });
 
-  // Busca opções
   const { data: opcoes } = useQuery({
     queryKey: ["campanha", campanha?.id, "opcoes"],
     enabled: !!campanha?.id,
@@ -49,7 +47,6 @@ export default function CampanhaDetalhe() {
     },
   });
 
-  // Busca meios de pagamento
   const { data: meios } = useQuery({
     queryKey: ["meios-pagamento"],
     queryFn: async () => {
@@ -63,7 +60,6 @@ export default function CampanhaDetalhe() {
     },
   });
 
-  // Busca apostas do usuário
   const { data: minhasApostas, refetch: refetchMinhasApostas } = useQuery({
     queryKey: ["apostas", "usuario", user?.id],
     enabled: !!user?.id,
@@ -76,12 +72,10 @@ export default function CampanhaDetalhe() {
     },
   });
 
-  // Filtra apenas apostas desta campanha
   const minhasNestaCampanha = (minhasApostas ?? []).filter(
     (a) => String(a.idCampanha) === String(campanha?.id)
   );
 
-  // Identifica os status
   const apostaConfirmada = minhasNestaCampanha.find(
     (a) => a.status === "CONFIRMADA"
   );
@@ -92,7 +86,6 @@ export default function CampanhaDetalhe() {
     (a) => a.status === "PENDENTE" || a.status === "AGUARDANDO_VALIDACAO"
   );
 
-  // Preenche os campos com os dados da aposta ativa
   useEffect(() => {
     if (apostaAtiva) {
       setIdOpcao(apostaAtiva.idOpcao);
@@ -103,7 +96,6 @@ export default function CampanhaDetalhe() {
     }
   }, [apostaAtiva]);
 
-  // Mutation de CRIAÇÃO
   const criarMutation = useMutation({
     mutationFn: async () => {
       if (!campanha) throw new Error("Campanha não carregada");
@@ -127,7 +119,6 @@ export default function CampanhaDetalhe() {
     onError: (e) => toast.error(apiErrorMessage(e, "Erro ao criar aposta")),
   });
 
-  // Mutation de EDIÇÃO
   const editarMutation = useMutation({
     mutationFn: async () => {
       if (!campanha) throw new Error("Campanha não carregada");
@@ -148,23 +139,6 @@ export default function CampanhaDetalhe() {
       qc.invalidateQueries({ queryKey: ["apostas", "usuario", user?.id] });
     },
     onError: (e) => toast.error(apiErrorMessage(e, "Erro ao editar aposta")),
-  });
-
-  // Função para cancelar/remover aposta (DELETE)
-  const cancelarAposta = useMutation({
-    mutationFn: async () => {
-      if (!apostaAtiva) throw new Error("Nenhuma aposta ativa");
-      const { data } = await api.delete(`/apostas/${apostaAtiva.id}`);
-      return data;
-    },
-    onSuccess: () => {
-      toast.success("Aposta cancelada.");
-      setIdOpcao("");
-      setIdMeioPagamento("");
-      refetchMinhasApostas();
-      qc.invalidateQueries({ queryKey: ["apostas", "usuario", user?.id] });
-    },
-    onError: (e) => toast.error(apiErrorMessage(e, "Erro ao cancelar aposta")),
   });
 
   const handleSubmit = () => {
@@ -201,14 +175,17 @@ export default function CampanhaDetalhe() {
 
   return (
     <div className="space-y-6">
-      {/* Cabeçalho com voltar e gerenciar */}
       <div className="flex items-center justify-between gap-3">
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-4 w-4" /> Voltar
         </Button>
         {eOCriador ? (
           <Link to={`/campanhas/${campanha.codigoConvite}/gerenciar`}>
-            <Button variant="secondary" size="sm">
+            <Button
+              variant="secondary"
+              size="sm"
+              className="hover:bg-secondary hover:text-secondary-foreground hover:opacity-100"
+            >
               <Settings2 className="h-4 w-4" />
               Gerenciar campanha
             </Button>
@@ -216,7 +193,6 @@ export default function CampanhaDetalhe() {
         ) : null}
       </div>
 
-      {/* Card da campanha */}
       <Card className="overflow-hidden">
         <div className="h-28 bg-gradient-brasil bg-stripes-brasil flex items-end p-5">
           <div className="flex gap-2">
@@ -247,9 +223,7 @@ export default function CampanhaDetalhe() {
         </CardContent>
       </Card>
 
-      {/* Grid principal */}
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Card de aposta */}
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>
@@ -261,23 +235,17 @@ export default function CampanhaDetalhe() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {eOCriador ? (
-              <p className="text-sm text-muted-foreground">
-                Você é o criador desta campanha. Como criador, você administra as apostas pela aba{" "}
-                <Link
-                  to={`/campanhas/${campanha.codigoConvite}/gerenciar`}
-                  className="text-primary font-semibold hover:underline"
-                >
-                  Gerenciar campanha
-                </Link>
-                .
-              </p>
-            ) : campanha.status !== "ABERTA" ? (
+            {eOCriador && (
+              <div className="text-sm text-muted-foreground bg-muted/50 p-2 rounded-md">
+                🔧 Você é o criador da campanha. Use o botão <strong>"Gerenciar campanha"</strong> no topo para administrar as apostas.
+              </div>
+            )}
+
+            {campanha.status !== "ABERTA" ? (
               <p className="text-sm text-muted-foreground">
                 Esta campanha não está aceitando novas apostas.
               </p>
             ) : apostaConfirmada ? (
-              // --- BLOQUEIO: aposta confirmada ---
               <div className="p-4 border border-green-200 rounded-lg bg-green-50 text-green-700">
                 <p className="font-semibold">✅ Sua aposta foi confirmada!</p>
                 <p className="text-sm">
@@ -285,14 +253,12 @@ export default function CampanhaDetalhe() {
                 </p>
                 {apostaConfirmada.opcao?.descricao && (
                   <div className="mt-2 text-xs">
-                    Opção escolhida:{" "}
-                    <strong>{apostaConfirmada.opcao.descricao}</strong>
+                    Opção escolhida: <strong>{apostaConfirmada.opcao.descricao}</strong>
                   </div>
                 )}
               </div>
             ) : (
               <>
-                {/* Aviso de aposta rejeitada (se houver) */}
                 {apostaRejeitada && (
                   <div className="p-3 border border-red-200 rounded-lg bg-red-50 text-red-700 mb-3">
                     <p className="font-semibold">❌ Sua aposta anterior foi rejeitada.</p>
@@ -300,7 +266,6 @@ export default function CampanhaDetalhe() {
                   </div>
                 )}
 
-                {/* Se tiver aposta ativa, edição; senão, criação */}
                 <div className="space-y-2">
                   <Label>Escolha sua opção</Label>
                   <div className="grid sm:grid-cols-2 gap-2">
@@ -383,27 +348,12 @@ export default function CampanhaDetalhe() {
                   >
                     {apostaAtiva ? "Salvar alterações" : "Confirmar aposta"}
                   </Button>
-                  {apostaAtiva && (
-                    <Button
-                      size="lg"
-                      variant="destructive"
-                      onClick={() => {
-                        if (window.confirm("Tem certeza que deseja cancelar esta aposta?")) {
-                          cancelarAposta.mutate();
-                        }
-                      }}
-                      loading={cancelarAposta.isPending}
-                    >
-                      Cancelar
-                    </Button>
-                  )}
                 </div>
               </>
             )}
           </CardContent>
         </Card>
 
-        {/* Card "Minha aposta" */}
         <Card>
           <CardHeader>
             <CardTitle>Minha aposta</CardTitle>
@@ -425,9 +375,17 @@ export default function CampanhaDetalhe() {
                     </span>
                     <StatusApostaInline status={a.status} />
                   </div>
+
+                  {!a.comprovante && a.status === "PENDENTE" && (
+                    <div className="mt-1 p-2 bg-yellow-50 border border-yellow-200 rounded-md text-xs text-yellow-800">
+                      ⚠️ Você precisa anexar um comprovante de pagamento para que sua aposta seja validada pelo criador da campanha.
+                    </div>
+                  )}
+
                   {!a.comprovante && a.status === "PENDENTE" && (
                     <ReanexarComprovante apostaId={a.id} />
                   )}
+
                   {a.comprovante && (
                     <a
                       href={
@@ -437,9 +395,9 @@ export default function CampanhaDetalhe() {
                       }
                       target="_blank"
                       rel="noreferrer"
-                      className="text-xs font-semibold text-primary hover:underline"
+                      className="text-xs font-semibold text-primary hover:underline block mt-1"
                     >
-                      Ver comprovante
+                      📎 Ver comprovante
                     </a>
                   )}
                 </div>

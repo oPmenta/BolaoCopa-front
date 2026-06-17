@@ -28,7 +28,6 @@ export default function MeiosPagamento() {
     queryKey: ["admin", "meios-pagamento"],
     queryFn: async () => {
       const response = await api.get<{ data: MeioPagamento[] }>("/meios-pagamento");
-      // Mapeia para incluir 'nome' (derivado de descricao) e 'ativo' (derivado de status)
       return response.data.data.map((item) => ({
         ...item,
         nome: item.descricao,
@@ -53,7 +52,6 @@ export default function MeiosPagamento() {
 
   const toggleM = useMutation({
     mutationFn: async (m: MeioPagamento & { ativo: boolean }) => {
-      // Envia o status correto (ATIVO ou INATIVO)
       const novoStatus = m.ativo ? "INATIVO" : "ATIVO";
       const { data } = await api.patch(`/meios-pagamento/${m.id}`, { status: novoStatus });
       return data;

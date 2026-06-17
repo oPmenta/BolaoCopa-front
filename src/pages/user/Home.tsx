@@ -25,7 +25,7 @@ export default function Home() {
       >
         <div className="max-w-2xl space-y-4">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-sm px-3 py-1 text-xs font-semibold text-yellow-300 border border-yellow-500/30">
-            <Sparkles className="h-3.5 w-3.5 text-yellow-300" /> Edição Mundial
+            <Sparkles className="h-3.5 w-3.5 text-yellow-300" /> Copa do Mundo
           </span>
           <h1 className="font-display text-4xl sm:text-6xl leading-none text-shadow">
             Aposte com a galera. <br />
@@ -36,7 +36,7 @@ export default function Home() {
             convite enviado pelo seu amigo.
           </p>
           <div className="max-w-md pt-2">
-            <BuscaPorCodigo placeholder="Tem um código de convite? Cole aqui" />
+            <BuscaPorCodigo placeholder="Tem um código de convite? Cole aqui!" />
           </div>
         </div>
       </motion.section>

@@ -16,17 +16,17 @@ export function BuscaPorCodigo({ placeholder = "Buscar por código de convite...
   };
 
   return (
-    <form onSubmit={onSubmit} className="flex gap-2 w-full items-center">
+    <form onSubmit={onSubmit} className="flex gap-2 w-full">
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           value={codigo}
           onChange={(e) => setCodigo(e.target.value)}
           placeholder={placeholder}
-          className="pl-9 uppercase tracking-wider h-10"
+          className="pl-9 tracking-wider text-foreground bg-white/90 border-gray-30 focus:border-primary placeholder:text-muted-foreground/70"
         />
       </div>
-      <Button type="submit" variant="default" className="h-10">
+      <Button type="submit" variant="default" size="lg" className="h-10">
         Buscar
       </Button>
     </form>

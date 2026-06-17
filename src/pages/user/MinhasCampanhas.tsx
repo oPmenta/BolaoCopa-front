@@ -5,10 +5,14 @@ import { CampanhaCard } from "@/components/CampanhaCard";
 import { Button } from "@/components/ui/Button";
 import { Plus } from "lucide-react";
 import type { Campanha } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function MinhasCampanhas() {
+  const { user } = useAuth();
+
   const { data, isLoading } = useQuery({
-    queryKey: ["campanhas", "minhas"],
+    queryKey: ["campanhas", "minhas", user?.id],
+    enabled: !!user?.id,
     queryFn: async () => {
       const response = await api.get<{ data: Campanha[] }>("/campanhas/minhas");
       return response.data.data;

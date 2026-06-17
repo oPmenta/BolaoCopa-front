@@ -1,7 +1,6 @@
 import axios from "axios";
 
 export const api = axios.create({
-  // Se VITE_API_URL não estiver definido, ele usa "/" (a porta 5173 do Vite)
   baseURL: import.meta.env.VITE_API_URL ?? "/", 
 });
 

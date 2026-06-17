@@ -88,18 +88,18 @@
     box-shadow: 0 12px 40px -16px rgba(0, 0, 0, 0.25);
   }
 
-  /* Classe para ícone dourado */
+  /* ícone dourado */
   .icon-gold {
     color: #FFDF00;
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
   }
 
-  /* Classe para texto com sombra (sobre fundos escuros) */
+  /* texto com sombra (sobre fundos escuros) */
   .text-shadow {
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
-  /* Classe para texto preto sobre fundo claro (usado nos cards) */
+  /* texto preto sobre fundo claro (usado nos cards) */
   .text-dark-strong {
     color: #1a1a1a;
   }

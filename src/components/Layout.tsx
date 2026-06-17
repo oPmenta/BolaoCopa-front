@@ -15,9 +15,9 @@ export function Layout() {
   ];
   const adminLinks = [
     { to: "/admin", label: "Dashboard" },
-    { to: "/admin/campanhas/nova", label: "Nova campanha" },
-    { to: "/admin/meios-pagamento", label: "Meios de pagamento" },
     { to: "/minhas-campanhas", label: "Minhas campanhas" },
+    { to: "/admin/campanhas/nova", label: "Criar campanha" },
+    { to: "/admin/meios-pagamento", label: "Meios de pagamento" },
   ];
   const links = isAdmin ? adminLinks : userLinks;
 
@@ -107,7 +107,7 @@ export function Layout() {
 
       <footer className="border-t border-border bg-card/60">
         <div className="container-app py-6 text-xs text-muted-foreground flex items-center justify-between">
-          <span>Bolão da Copa • feito com 💚💛 no Brasil</span>
+          <span>Bolão da Copa • ⚽ Jogue com Garra!</span>
           <span>v0.1</span>
         </div>
       </footer>
