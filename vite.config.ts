@@ -9,17 +9,5 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    proxy: {
-      "/login": {
-        target: "http://localhost:3000",
-        changeOrigin: true,
-        secure: false,
-      },
-      "/cadastro": {
-        target: "http://localhost:3000",
-        changeOrigin: true,
-        secure: false,
-      }
-    }
-  }
+  },
 });
