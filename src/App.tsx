@@ -18,7 +18,6 @@ import GerenciarCampanha from "@/pages/user/GerenciarCampanha";
 import AdminDashboard from "@/pages/admin/Dashboard";
 import CriarCampanhaAdmin from "@/pages/admin/CriarCampanhaAdmin";
 import MeiosPagamento from "@/pages/admin/MeiosPagamento";
-import TiposCampanha from "@/pages/admin/TiposCampanha";
 
 function RootRedirect() {
   const { isAuthenticated, user } = useAuth();
@@ -47,22 +46,9 @@ export default function App() {
                 }
               />
               <Route path="/home" element={<Navigate to="/" replace />} />
-              <Route
-                path="/campanhas/codigo/:codigo"
-                element={<CampanhaDetalhe />}
-              />
-              <Route
-                path="/campanhas/:codigo/gerenciar"
-                element={<GerenciarCampanha />}
-              />
-              <Route
-                path="/minhas-campanhas"
-                element={
-                  <RoleRoute role="USER">
-                    <MinhasCampanhas />
-                  </RoleRoute>
-                }
-              />
+              <Route path="/campanhas/codigo/:codigo" element={<CampanhaDetalhe />} />
+              <Route path="/campanhas/:codigo/gerenciar" element={<GerenciarCampanha />} />
+              <Route path="/minhas-campanhas" element={<MinhasCampanhas />} />
               <Route
                 path="/campanhas/nova"
                 element={
@@ -94,14 +80,6 @@ export default function App() {
                 element={
                   <RoleRoute role="ADMIN">
                     <MeiosPagamento />
-                  </RoleRoute>
-                }
-              />
-              <Route
-                path="/admin/tipos-campanha"
-                element={
-                  <RoleRoute role="ADMIN">
-                    <TiposCampanha />
                   </RoleRoute>
                 }
               />

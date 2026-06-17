@@ -109,24 +109,30 @@ export function CampanhaForm({
         throw new Error(`Tipo "${tipoNome}" não encontrado no banco.`);
       }
 
+      const valor_bolao = Number(values.valorAposta);
+      if (isNaN(valor_bolao) || valor_bolao <= 0) {
+        throw new Error('Valor da aposta deve ser maior que 0');
+      }
+
+      console.log('Valor da aposta:', values.valorAposta);
       const payload = {
         nome: values.nome,
         dt_inicio: new Date(values.dt_inicio).toISOString(),
         dt_fim: new Date(values.dt_fim).toISOString(),
         taxa_operacional: 0,
-        valor_bolao: values.valorAposta,
+        valor_bolao: valor_bolao,
         codigo_campanha: values.codigoConvite,
-        tipo_campanha_id: tipoSelecionado.id, // ID real
+        tipo_campanha_id: tipoSelecionado.id,
         opcoes: values.opcoes.map(o => o.descricao),
       };
 
-      const { data } = await api.post<Campanha>("/campanhas", payload);
-      return data;
+      const response = await api.post<{ data: Campanha }>("/campanhas", payload);
+      return response.data.data;
     },
     onSuccess: (c) => {
       toast.success("Campanha criada!");
       if (onSubmitted) onSubmitted(c);
-      else navigate(`/campanhas/codigo/${c.codigoConvite}`);
+      else navigate(`/campanhas/${c.codigoConvite}/gerenciar`);
     },
     onError: (e) => toast.error(apiErrorMessage(e, "Erro ao criar campanha")),
   });
@@ -189,16 +195,10 @@ export function CampanhaForm({
         <Textarea id="descricao" {...form.register("descricao")} />
       </div>
 
-      <div className="gap-4">
+      <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <Label htmlFor="valorAposta">Valor da aposta (R$)</Label>
-          <Input
-            id="valorAposta"
-            type="number"
-            step="0.01"
-            min="0"
-            {...form.register("valorAposta")}
-          />
+          <Input id="valorAposta" type="number" step="0.01" min="0.01" {...form.register("valorAposta")} />
           <FieldError message={form.formState.errors.valorAposta?.message} />
         </div>
       </div>

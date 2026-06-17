@@ -17,7 +17,7 @@ export function Layout() {
     { to: "/admin", label: "Dashboard" },
     { to: "/admin/campanhas/nova", label: "Nova campanha" },
     { to: "/admin/meios-pagamento", label: "Meios de pagamento" },
-    { to: "/admin/tipos-campanha", label: "Tipos de campanha" },
+    { to: "/minhas-campanhas", label: "Minhas campanhas" },
   ];
   const links = isAdmin ? adminLinks : userLinks;
 

@@ -18,10 +18,12 @@ export function StatusCampanhaBadge({ status }: { status: StatusCampanha }) {
   switch (status) {
     case "ABERTA":
       return <Badge tone="success">Aberta</Badge>;
+    case "FECHADA":
+      return <Badge tone="neutral">Fechada</Badge>;
     case "EM_APURACAO":
       return <Badge tone="warning">Em apuração</Badge>;
     case "ENCERRADA":
-      return <Badge tone="neutral">Encerrada</Badge>;
+      return <Badge tone="destructive">Encerrada</Badge>;
   }
 }
 
