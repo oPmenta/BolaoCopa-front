@@ -39,6 +39,7 @@ const baseSchema = z
         },
         { message: "Opções não podem ter descrições duplicadas." }
       ),
+    chavePix: z.string().min(3, "Chave PIX é obrigatória"),
   })
   .refine(
     (data) => {
@@ -79,6 +80,7 @@ export function CampanhaForm({
       valorAposta: 10,
       dt_fim: "",
       opcoes: [{ descricao: "" }, { descricao: "" }],
+      chavePix: "",
     },
   });
   const { fields, append, remove } = useFieldArray({
@@ -119,6 +121,7 @@ export function CampanhaForm({
         codigo_campanha: values.codigoConvite,
         tipo_campanha_id: tipoSelecionado.id,
         opcoes: values.opcoes.map(o => o.descricao),
+        chave_pix: values.chavePix,
       };
 
       const response = await api.post<{ data: Campanha }>("/campanhas", payload);
@@ -246,6 +249,16 @@ export function CampanhaForm({
           />
           <FieldError message={form.formState.errors.dt_fim?.message} />
         </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="chavePix">Chave PIX para recebimento</Label>
+        <Input
+          id="chavePix"
+          placeholder="CPF, e-mail, telefone, chave aleatória"
+          {...form.register("chavePix")}
+        />
+        <FieldError message={form.formState.errors.chavePix?.message} />
       </div>
 
       <div className="space-y-2">

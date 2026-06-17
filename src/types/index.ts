@@ -32,6 +32,12 @@ export interface Campanha {
   dataInicio?: string;
   dataFim?: string;
   opcoes?: OpcaoAposta[];
+  meio_pagamento?: {
+    id: number | string;
+    chave: string;
+    descricao: string;
+    status: string;
+  };
 }
 
 export interface OpcaoAposta {

@@ -75,14 +75,6 @@ export default function App() {
                   </RoleRoute>
                 }
               />
-              <Route
-                path="/admin/meios-pagamento"
-                element={
-                  <RoleRoute role="ADMIN">
-                    <MeiosPagamento />
-                  </RoleRoute>
-                }
-              />
             </Route>
 
             <Route path="/__root" element={<RootRedirect />} />

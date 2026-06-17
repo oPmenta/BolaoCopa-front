@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Settings2, Upload, Trophy, Pencil } from "lucide-react";
+import { ArrowLeft, Settings2, Upload, Trophy } from "lucide-react";
 import { api, apiErrorMessage } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -14,7 +14,7 @@ import {
   TipoCampanhaBadge,
 } from "@/components/StatusBadge";
 import { formatCurrency } from "@/lib/utils";
-import type { Aposta, Campanha, MeioPagamento, OpcaoAposta } from "@/types";
+import type { Aposta, Campanha, OpcaoAposta } from "@/types";
 
 export default function CampanhaDetalhe() {
   const { codigo } = useParams<{ codigo: string }>();
@@ -23,7 +23,6 @@ export default function CampanhaDetalhe() {
   const qc = useQueryClient();
 
   const [idOpcao, setIdOpcao] = useState<string | number | "">("");
-  const [idMeioPagamento, setIdMeioPagamento] = useState<string | number | "">("");
   const [comprovante, setComprovante] = useState<File | null>(null);
 
   const { data: campanha, isLoading, isError } = useQuery({
@@ -44,19 +43,6 @@ export default function CampanhaDetalhe() {
         `/campanhas/${campanha.id}/opcoes`
       );
       return response.data.data;
-    },
-  });
-
-  const { data: meios } = useQuery({
-    queryKey: ["meios-pagamento"],
-    queryFn: async () => {
-      const response = await api.get<{ data: MeioPagamento[] }>("/meios-pagamento");
-      return response.data.data
-        .filter((m) => m.status === "ATIVO")
-        .map((m) => ({
-          ...m,
-          nome: m.descricao,
-        }));
     },
   });
 
@@ -89,10 +75,8 @@ export default function CampanhaDetalhe() {
   useEffect(() => {
     if (apostaAtiva) {
       setIdOpcao(apostaAtiva.idOpcao);
-      setIdMeioPagamento(apostaAtiva.meio_pagamento?.id || "");
     } else {
       setIdOpcao("");
-      setIdMeioPagamento("");
     }
   }, [apostaAtiva]);
 
@@ -100,10 +84,8 @@ export default function CampanhaDetalhe() {
     mutationFn: async () => {
       if (!campanha) throw new Error("Campanha não carregada");
       if (!idOpcao) throw new Error("Escolha uma opção");
-      if (!idMeioPagamento) throw new Error("Selecione um meio de pagamento.");
       const form = new FormData();
       form.append("campanha_opcao_id", String(idOpcao));
-      form.append("meio_pagamento_id", String(idMeioPagamento));
       if (comprovante) form.append("comprovante", comprovante);
       const { data } = await api.post("/apostas", form);
       return data;
@@ -111,7 +93,6 @@ export default function CampanhaDetalhe() {
     onSuccess: () => {
       toast.success("Aposta criada com sucesso!");
       setIdOpcao("");
-      setIdMeioPagamento("");
       setComprovante(null);
       refetchMinhasApostas();
       qc.invalidateQueries({ queryKey: ["apostas", "usuario", user?.id] });
@@ -124,10 +105,8 @@ export default function CampanhaDetalhe() {
       if (!campanha) throw new Error("Campanha não carregada");
       if (!apostaAtiva) throw new Error("Nenhuma aposta ativa para editar");
       if (!idOpcao) throw new Error("Escolha uma opção");
-      if (!idMeioPagamento) throw new Error("Selecione um meio de pagamento.");
       const form = new FormData();
       form.append("campanha_opcao_id", String(idOpcao));
-      form.append("meio_pagamento_id", String(idMeioPagamento));
       if (comprovante) form.append("comprovante", comprovante);
       const { data } = await api.patch(`/apostas/${apostaAtiva.id}`, form);
       return data;
@@ -298,37 +277,32 @@ export default function CampanhaDetalhe() {
                   </div>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="meio">Meio de pagamento</Label>
-                    <select
-                      id="meio"
-                      className="flex h-10 w-full rounded-lg border border-input bg-card px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      value={idMeioPagamento}
-                      onChange={(e) => setIdMeioPagamento(e.target.value)}
-                    >
-                      <option value="">Selecione um meio de pagamento</option>
-                      {(meios ?? []).map((m) => (
-                        <option key={m.id} value={String(m.id)}>
-                          {m.descricao} {m.chave ? `— ${m.chave}` : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="comprovante">
-                      <span className="inline-flex items-center gap-1">
-                        <Upload className="h-3.5 w-3.5" />{" "}
-                        {apostaAtiva ? "Novo comprovante (opcional)" : "Comprovante (opcional)"}
-                      </span>
-                    </Label>
-                    <Input
-                      id="comprovante"
-                      type="file"
-                      accept="image/*,application/pdf"
-                      onChange={(e) => setComprovante(e.target.files?.[0] ?? null)}
-                    />
-                  </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="chavePix">Chave PIX do criador</Label>
+                  <Input
+                    id="chavePix"
+                    value={campanha.meio_pagamento?.chave || "Chave não cadastrada"}
+                    disabled
+                    className="bg-muted/50"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Realize o pagamento para esta chave e anexe o comprovante.
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="comprovante">
+                    <span className="inline-flex items-center gap-1">
+                      <Upload className="h-3.5 w-3.5" />{" "}
+                      {apostaAtiva ? "Novo comprovante (opcional)" : "Comprovante (opcional)"}
+                    </span>
+                  </Label>
+                  <Input
+                    id="comprovante"
+                    type="file"
+                    accept="image/*,application/pdf"
+                    onChange={(e) => setComprovante(e.target.files?.[0] ?? null)}
+                  />
                 </div>
 
                 {apostaAtiva && (
@@ -343,7 +317,7 @@ export default function CampanhaDetalhe() {
                     size="lg"
                     className="flex-1"
                     loading={criarMutation.isPending || editarMutation.isPending}
-                    disabled={!idOpcao || !idMeioPagamento}
+                    disabled={!idOpcao}
                     onClick={handleSubmit}
                   >
                     {apostaAtiva ? "Salvar alterações" : "Confirmar aposta"}
@@ -397,7 +371,7 @@ export default function CampanhaDetalhe() {
                       rel="noreferrer"
                       className="text-xs font-semibold text-primary hover:underline block mt-1"
                     >
-                      📎 Ver comprovante
+                      Ver comprovante
                     </a>
                   )}
                 </div>
@@ -411,13 +385,19 @@ export default function CampanhaDetalhe() {
 }
 
 function StatusApostaInline({ status }: { status: Aposta["status"] }) {
-  const map: Record<Aposta["status"], string> = {
+  const labels: Record<Aposta["status"], string> = {
+    PENDENTE: "Pendente",
+    AGUARDANDO_VALIDACAO: "Aguardando validação",
+    CONFIRMADA: "Confirmada",
+    REJEITADA: "Rejeitada",
+  };
+  const classes: Record<Aposta["status"], string> = {
     PENDENTE: "text-muted-foreground",
     AGUARDANDO_VALIDACAO: "text-[hsl(var(--warning))]",
     CONFIRMADA: "text-[hsl(var(--success))]",
     REJEITADA: "text-destructive",
   };
-  return <span className={`text-xs font-semibold ${map[status]}`}>{status}</span>;
+  return <span className={`text-xs font-semibold ${classes[status]}`}>{labels[status]}</span>;
 }
 
 function ReanexarComprovante({ apostaId }: { apostaId: Aposta["id"] }) {

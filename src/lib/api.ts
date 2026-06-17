@@ -7,6 +7,8 @@ export const api = axios.create({
 const TOKEN_KEY = "bolao_token";
 const USER_KEY = "bolao_user";
 
+console.log(localStorage.getItem('bolao_token'));
+
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY);
 }
