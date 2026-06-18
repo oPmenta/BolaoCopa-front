@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/Badge";
 import type { MeioPagamento } from "@/types";
 
 const schema = z.object({
-  nome: z.string().min(2, "Informe o nome"),
+  descricao: z.string().min(2, "Informe a descrição"),
   chave: z.string().optional(),
 });
 type FormData = z.infer<typeof schema>;
@@ -28,18 +28,22 @@ export default function MeiosPagamento() {
     queryKey: ["admin", "meios-pagamento"],
     queryFn: async () => {
       const response = await api.get<{ data: MeioPagamento[] }>("/meios-pagamento");
-      return response.data.data;
+      return response.data.data.map((item) => ({
+        ...item,
+        nome: item.descricao,
+        ativo: item.status === "ATIVO",
+      }));
     },
   });
 
   const createM = useMutation({
     mutationFn: async (v: FormData) => {
-      const { data } = await api.post("/meios-pagamento", v);
+      const { data } = await api.post("/meios-pagamento", { descricao: v.descricao });
       return data;
     },
     onSuccess: () => {
       toast.success("Meio de pagamento criado.");
-      reset({ nome: "", chave: "" });
+      reset({ descricao: "", chave: "" });
       qc.invalidateQueries({ queryKey: ["admin", "meios-pagamento"] });
       qc.invalidateQueries({ queryKey: ["meios-pagamento"] });
     },
@@ -47,8 +51,9 @@ export default function MeiosPagamento() {
   });
 
   const toggleM = useMutation({
-    mutationFn: async (m: MeioPagamento) => {
-      const { data } = await api.patch(`/meios-pagamento/${m.id}`, { ativo: !m.ativo });
+    mutationFn: async (m: MeioPagamento & { ativo: boolean }) => {
+      const novoStatus = m.ativo ? "INATIVO" : "ATIVO";
+      const { data } = await api.patch(`/meios-pagamento/${m.id}`, { status: novoStatus });
       return data;
     },
     onSuccess: () => {
@@ -77,9 +82,9 @@ export default function MeiosPagamento() {
             className="grid sm:grid-cols-[1fr_1fr_auto] gap-3 items-end"
           >
             <div className="space-y-1.5">
-              <Label htmlFor="nome">Nome</Label>
-              <Input id="nome" placeholder="Ex: PIX, Banco X" {...register("nome")} />
-              <FieldError message={errors.nome?.message} />
+              <Label htmlFor="descricao">Nome</Label>
+              <Input id="descricao" placeholder="Ex: PIX, Banco X" {...register("descricao")} />
+              <FieldError message={errors.descricao?.message} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="chave">Chave / detalhe</Label>

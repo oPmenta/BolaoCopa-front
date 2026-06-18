@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   api,
   apiErrorMessage,
@@ -17,7 +18,7 @@ interface AuthContextValue {
   isAdmin: boolean;
   loading: boolean;
   login: (email: string, senha: string) => Promise<Usuario>;
-  cadastro: (data: { nome: string; email: string; senha: string }) => Promise<void>;
+  cadastro: (data: { nome: string; email: string; senha: string; cpf: string; telefone: string }) => Promise<void>;
   logout: () => void;
 }
 
@@ -27,9 +28,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<Usuario | null>(() => getStoredUser<Usuario>());
   const [token, setTokenState] = useState<string | null>(() => getToken());
   const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
-    // mantém sincronizado caso outra aba faça logout
     const onStorage = () => {
       setTokenState(getToken());
       setUser(getStoredUser<Usuario>());
@@ -51,16 +52,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setStoredUser(payload.usuario);
       setTokenState(payload.token);
       setUser(payload.usuario);
+
+      queryClient.invalidateQueries({ queryKey: ["campanhas"] });
+
       return payload.usuario;
     } catch (e) {
       throw new Error(apiErrorMessage(e, "Falha no login"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [queryClient]);
 
   const cadastro = useCallback(
-    async (data: { nome: string; email: string; senha: string }) => {
+    async (data: { nome: string; email: string; senha: string; cpf: string; telefone: string }) => {
       setLoading(true);
       try {
         await api.post("/cadastro", data);
@@ -77,7 +81,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearAuth();
     setTokenState(null);
     setUser(null);
-  }, []);
+    queryClient.clear();
+  }, [queryClient]);
 
   const value = useMemo<AuthContextValue>(
     () => ({

@@ -42,38 +42,48 @@ const buttonVariants = cva(
 
 interface ButtonProps
   extends React.ComponentProps<"button">,
-  VariantProps<typeof buttonVariants> {
+    VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   loading?: boolean;
 }
 
-function Button({
-  className,
-  variant = "default",
-  size = "default",
-  asChild = false,
-  loading = false,
-  children,
-  disabled,
-  ...props
-}: ButtonProps) {
-  const Comp = asChild ? Slot.Root : "button";
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      className,
+      variant = "default",
+      size = "default",
+      asChild = false,
+      loading = false,
+      children,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    const Comp = asChild ? Slot.Root : "button";
 
-  return (
-    <Comp
-      data-slot="button"
-      data-variant={variant}
-      data-size={size}
-      className={cn(buttonVariants({ variant, size, className }))}
-      disabled={loading || disabled}
-      {...props}
-    >
-      {loading ? (
-        <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-      ) : null}
-      {children}
-    </Comp>
-  );
-}
+    return (
+      <Comp
+        ref={ref}
+        data-slot="button"
+        data-variant={variant}
+        data-size={size}
+        className={cn(buttonVariants({ variant, size, className }))}
+        disabled={loading || disabled}
+        {...props}
+      >
+        <span className="inline-flex items-center justify-center gap-1.5">
+          {loading ? (
+            <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+          ) : null}
+          {children}
+        </span>
+      </Comp>
+    );
+  }
+);
+
+Button.displayName = "Button";
 
 export { Button, buttonVariants };

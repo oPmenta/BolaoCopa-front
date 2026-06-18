@@ -22,34 +22,34 @@ const baseSchema = z
       .min(4, "Mínimo 4 caracteres")
       .regex(/^[A-Za-z0-9_-]+$/, "Use letras, números, _ ou -"),
     valorAposta: z.coerce.number().min(0.01, "Valor deve ser maior que 0"),
-    dt_inicio: z.string().refine((val) => !isNaN(Date.parse(val)), {
-      message: "Data/hora inválida",
-    }),
     dt_fim: z.string().refine((val) => !isNaN(Date.parse(val)), {
       message: "Data/hora inválida",
     }),
-    // No CriarCampanha.tsx, no baseSchema, adicione:
     opcoes: z
-      .array(z.object({ descricao: z.string().min(1, "Obrigatório") }))
-      .min(2, "Adicione ao menos 2 opções")
+      .array(
+        z.object({
+          descricao: z.string().min(2, "Cada opção deve ter no mínimo 2 caracteres."),
+        })
+      )
+      .min(2, "Adicione ao menos 2 opções.")
       .refine(
         (items) => {
-          const descs = items.map(i => i.descricao.trim().toUpperCase());
+          const descs = items.map((i) => i.descricao.trim().toUpperCase());
           return descs.length === new Set(descs).size;
         },
-        { message: "Opções não podem ter descrições duplicadas" }
+        { message: "Opções não podem ter descrições duplicadas." }
       ),
+    chavePix: z.string().min(3, "Chave PIX é obrigatória"),
   })
   .refine(
     (data) => {
-      const inicio = new Date(data.dt_inicio);
       const fim = new Date(data.dt_fim);
       const agora = new Date();
-      return inicio > agora && fim > inicio;
+      return fim > agora;
     },
     {
-      message: "Data de início deve ser futura e data de fim deve ser após o início",
-      path: ["dt_inicio"],
+      message: "Data de fim deve ser futura.",
+      path: ["dt_fim"],
     }
   );
 
@@ -63,7 +63,6 @@ export function CampanhaForm({
   const navigate = useNavigate();
   const [tipo, setTipo] = useState<"PUBLICA" | "PRIVADA">("PUBLICA");
 
-  // Buscar tipos de campanha ativos do backend
   const { data: tipos, isLoading: tiposLoading } = useQuery({
     queryKey: ["tipos-campanha"],
     queryFn: async () => {
@@ -79,9 +78,9 @@ export function CampanhaForm({
       descricao: "",
       codigoConvite: "",
       valorAposta: 10,
-      dt_inicio: "",
       dt_fim: "",
       opcoes: [{ descricao: "" }, { descricao: "" }],
+      chavePix: "",
     },
   });
   const { fields, append, remove } = useFieldArray({
@@ -97,9 +96,9 @@ export function CampanhaForm({
 
       let tipoNome: "PUBLICA" | "PRIVADA";
       if (permitirEscolherTipo) {
-        tipoNome = tipo; // ADMIN escolheu
+        tipoNome = tipo;
       } else {
-        tipoNome = "PRIVADA"; // USER forçado
+        tipoNome = "PRIVADA";
       }
 
       const tipoSelecionado = tipos.find(
@@ -109,27 +108,72 @@ export function CampanhaForm({
         throw new Error(`Tipo "${tipoNome}" não encontrado no banco.`);
       }
 
+      const valor_bolao = Number(values.valorAposta);
+      if (isNaN(valor_bolao) || valor_bolao <= 0) {
+        throw new Error('Valor da aposta deve ser maior que 0');
+      }
+
       const payload = {
         nome: values.nome,
-        dt_inicio: new Date(values.dt_inicio).toISOString(),
         dt_fim: new Date(values.dt_fim).toISOString(),
         taxa_operacional: 0,
-        valor_bolao: values.valorAposta,
+        valor_bolao: valor_bolao,
         codigo_campanha: values.codigoConvite,
-        tipo_campanha_id: tipoSelecionado.id, // ID real
+        tipo_campanha_id: tipoSelecionado.id,
         opcoes: values.opcoes.map(o => o.descricao),
+        chave_pix: values.chavePix,
       };
 
-      const { data } = await api.post<Campanha>("/campanhas", payload);
-      return data;
+      const response = await api.post<{ data: Campanha }>("/campanhas", payload);
+      return response.data.data;
     },
     onSuccess: (c) => {
       toast.success("Campanha criada!");
       if (onSubmitted) onSubmitted(c);
-      else navigate(`/campanhas/codigo/${c.codigoConvite}`);
+      else navigate(`/campanhas/${c.codigoConvite}/gerenciar`);
     },
     onError: (e) => toast.error(apiErrorMessage(e, "Erro ao criar campanha")),
   });
+
+  const onSubmit = async (values: z.infer<typeof baseSchema>) => {
+    const descs = values.opcoes.map((o) => o.descricao.trim().toUpperCase());
+    const hasDuplicates = descs.length !== new Set(descs).size;
+    if (hasDuplicates) {
+      form.setError('opcoes', {
+        type: 'manual',
+        message: 'Opções não podem ter descrições duplicadas.',
+      });
+      return;
+    }
+
+    const invalidOption = values.opcoes.some((o) => o.descricao.trim().length < 2);
+    if (invalidOption) {
+      form.setError('opcoes', {
+        type: 'manual',
+        message: 'Cada opção deve ter no mínimo 2 caracteres.',
+      });
+      return;
+    }
+
+    if (values.opcoes.length < 2) {
+      form.setError('opcoes', {
+        type: 'manual',
+        message: 'Adicione ao menos 2 opções.',
+      });
+      return;
+    }
+
+    const fim = new Date(values.dt_fim);
+    if (isNaN(fim.getTime()) || fim <= new Date()) {
+      form.setError('dt_fim', {
+        type: 'manual',
+        message: 'Data de fim deve ser futura.',
+      });
+      return;
+    }
+
+    mutation.mutate(values);
+  };
 
   if (tiposLoading) {
     return <div className="h-64 rounded-2xl bg-muted animate-pulse" />;
@@ -137,7 +181,7 @@ export function CampanhaForm({
 
   return (
     <form
-      onSubmit={form.handleSubmit((v) => mutation.mutate(v))}
+      onSubmit={form.handleSubmit(onSubmit)}
       className="space-y-5"
     >
       {permitirEscolherTipo ? (
@@ -192,27 +236,10 @@ export function CampanhaForm({
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <Label htmlFor="valorAposta">Valor da aposta (R$)</Label>
-          <Input
-            id="valorAposta"
-            type="number"
-            step="0.01"
-            min="0"
-            {...form.register("valorAposta")}
-          />
+          <Input id="valorAposta" type="number" step="0.01" min="0.01" {...form.register("valorAposta")} />
           <FieldError message={form.formState.errors.valorAposta?.message} />
         </div>
-      </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div className="space-y-1.5">
-          <Label htmlFor="dt_inicio">Início da campanha</Label>
-          <Input
-            id="dt_inicio"
-            type="datetime-local"
-            {...form.register("dt_inicio")}
-          />
-          <FieldError message={form.formState.errors.dt_inicio?.message} />
-        </div>
         <div className="space-y-1.5">
           <Label htmlFor="dt_fim">Fim da campanha</Label>
           <Input
@@ -222,6 +249,16 @@ export function CampanhaForm({
           />
           <FieldError message={form.formState.errors.dt_fim?.message} />
         </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="chavePix">Chave PIX para recebimento</Label>
+        <Input
+          id="chavePix"
+          placeholder="CPF, e-mail, telefone, chave aleatória"
+          {...form.register("chavePix")}
+        />
+        <FieldError message={form.formState.errors.chavePix?.message} />
       </div>
 
       <div className="space-y-2">
@@ -238,25 +275,33 @@ export function CampanhaForm({
         </div>
         <div className="space-y-2">
           {fields.map((f, idx) => (
-            <div key={f.id} className="flex gap-2">
-              <Input
-                placeholder={`Opção ${idx + 1}`}
-                {...form.register(`opcoes.${idx}.descricao` as const)}
+            <div key={f.id} className="flex flex-col gap-1">
+              <div className="flex gap-2">
+                <Input
+                  placeholder={`Opção ${idx + 1}`}
+                  {...form.register(`opcoes.${idx}.descricao` as const)}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => fields.length > 2 && remove(idx)}
+                  disabled={fields.length <= 2}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <FieldError
+                message={form.formState.errors.opcoes?.[idx]?.descricao?.message}
               />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={() => fields.length > 2 && remove(idx)}
-                disabled={fields.length <= 2}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
             </div>
           ))}
         </div>
         <FieldError
-          message={form.formState.errors.opcoes?.message as string | undefined}
+          message={
+            form.formState.errors.opcoes?.message ||
+            form.formState.errors.opcoes?.root?.message
+          }
         />
       </div>
 

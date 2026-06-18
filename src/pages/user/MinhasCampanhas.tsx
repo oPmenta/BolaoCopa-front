@@ -5,10 +5,14 @@ import { CampanhaCard } from "@/components/CampanhaCard";
 import { Button } from "@/components/ui/Button";
 import { Plus } from "lucide-react";
 import type { Campanha } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function MinhasCampanhas() {
+  const { user } = useAuth();
+
   const { data, isLoading } = useQuery({
-    queryKey: ["campanhas", "minhas"],
+    queryKey: ["campanhas", "minhas", user?.id],
+    enabled: !!user?.id,
     queryFn: async () => {
       const response = await api.get<{ data: Campanha[] }>("/campanhas/minhas");
       return response.data.data;
@@ -25,7 +29,7 @@ export default function MinhasCampanhas() {
           </p>
         </div>
         <Link to="/campanhas/nova">
-          <Button variant="default">   {}
+          <Button variant="default">
             <Plus className="h-4 w-4" />
             Nova campanha
           </Button>
@@ -40,12 +44,12 @@ export default function MinhasCampanhas() {
         </div>
       ) : !data?.length ? (
         <div className="rounded-2xl border border-dashed border-border p-12 text-center text-muted-foreground">
-          Você ainda não criou nem participa de nenhuma campanha.
+          Você ainda não criou nenhuma campanha.
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {data.map((c) => (
-            <CampanhaCard key={c.id} campanha={c} />
+            <CampanhaCard key={c.id} campanha={c} gerenciar={true} />
           ))}
         </div>
       )}

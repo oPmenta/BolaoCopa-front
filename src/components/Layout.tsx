@@ -15,9 +15,8 @@ export function Layout() {
   ];
   const adminLinks = [
     { to: "/admin", label: "Dashboard" },
-    { to: "/admin/campanhas/nova", label: "Nova campanha" },
-    { to: "/admin/meios-pagamento", label: "Meios de pagamento" },
-    { to: "/admin/tipos-campanha", label: "Tipos de campanha" },
+    { to: "/minhas-campanhas", label: "Minhas campanhas" },
+    { to: "/admin/campanhas/nova", label: "Criar campanha" },
   ];
   const links = isAdmin ? adminLinks : userLinks;
 
@@ -32,8 +31,8 @@ export function Layout() {
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-brasil text-primary-foreground shadow-elegant">
               <Trophy className="h-5 w-5" />
             </span>
-            <span>
-              Bolão da <span className="text-primary">Copa</span>
+            <span className="bg-gradient-to-r from-green-600 via-yellow-500 to-blue-700 bg-clip-text text-transparent">
+              Bolão da <span className="text-green-700">Copa</span>
             </span>
           </Link>
 
@@ -107,7 +106,7 @@ export function Layout() {
 
       <footer className="border-t border-border bg-card/60">
         <div className="container-app py-6 text-xs text-muted-foreground flex items-center justify-between">
-          <span>Bolão da Copa • feito com 💚💛 no Brasil</span>
+          <span>Bolão da Copa • ⚽ Jogue com Garra!</span>
           <span>v0.1</span>
         </div>
       </footer>

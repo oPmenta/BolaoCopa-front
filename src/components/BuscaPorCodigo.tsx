@@ -23,10 +23,10 @@ export function BuscaPorCodigo({ placeholder = "Buscar por código de convite...
           value={codigo}
           onChange={(e) => setCodigo(e.target.value)}
           placeholder={placeholder}
-          className="pl-9 uppercase tracking-wider"
+          className="pl-9 tracking-wider text-foreground bg-white/90 border-gray-30 focus:border-primary placeholder:text-muted-foreground/70"
         />
       </div>
-      <Button type="submit" variant="default">
+      <Button type="submit" variant="default" size="lg" className="h-10">
         Buscar
       </Button>
     </form>

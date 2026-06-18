@@ -9,7 +9,7 @@ export interface Usuario {
 
 export type TipoCampanha = "PUBLICA" | "PRIVADA";
 
-export type StatusCampanha = "ABERTA" | "EM_APURACAO" | "ENCERRADA";
+export type StatusCampanha = "ABERTA" | "FECHADA" | "EM_APURACAO" | "ENCERRADA";
 
 export type StatusAposta =
   | "PENDENTE"
@@ -32,6 +32,12 @@ export interface Campanha {
   dataInicio?: string;
   dataFim?: string;
   opcoes?: OpcaoAposta[];
+  meio_pagamento?: {
+    id: number | string;
+    chave: string;
+    descricao: string;
+    status: string;
+  };
 }
 
 export interface OpcaoAposta {
@@ -42,9 +48,9 @@ export interface OpcaoAposta {
 
 export interface MeioPagamento {
   id: number | string;
-  nome: string;
+  descricao: string;
   chave?: string | null;
-  ativo: boolean;
+  status: "ATIVO" | "INATIVO";
 }
 
 export interface TipoCampanhaItem {
@@ -64,6 +70,7 @@ export interface Aposta {
   campanha?: Campanha;
   opcao?: OpcaoAposta;
   usuario?: Usuario;
+  meio_pagamento?: MeioPagamento;
 }
 
 export interface LoginResponse {

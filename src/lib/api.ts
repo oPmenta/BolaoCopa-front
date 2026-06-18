@@ -1,12 +1,13 @@
 import axios from "axios";
 
 export const api = axios.create({
-  // Se VITE_API_URL não estiver definido, ele usa "/" (a porta 5173 do Vite)
   baseURL: import.meta.env.VITE_API_URL ?? "/", 
 });
 
 const TOKEN_KEY = "bolao_token";
 const USER_KEY = "bolao_user";
+
+console.log(localStorage.getItem('bolao_token'));
 
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY);
