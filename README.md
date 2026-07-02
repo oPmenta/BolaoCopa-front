@@ -14,7 +14,7 @@
 
 O **Bolão da Copa** é uma aplicação web completa para criar e participar de bolões de apostas. Este repositório contém o **frontend** da aplicação, desenvolvido em React com TypeScript, utilizando as melhores práticas de desenvolvimento e uma UI rica e interativa.
 
-Este backend foi desenvolvido para ser consumido pelo frontend do projeto:
+Este backend foi desenvolvido para ser consumido pelo backend do projeto:
 
 ➡️ **[BolaoCopa-api](https://github.com/oPmenta/BolaoCopa-api)**
 
